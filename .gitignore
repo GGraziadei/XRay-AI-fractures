@@ -1,0 +1,8 @@
+xray_crm/xray_crm/xray.h5
+xray_crm/xray_crm/images/*
+Utilities/*
+Annotations/*
+
+xray_crm/xray_crm/__pycache__/*
+xray_crm/core/__pycache__/*
+xray_crm/patient_files/*

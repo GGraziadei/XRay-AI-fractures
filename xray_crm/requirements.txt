@@ -1,0 +1,10 @@
+Django
+django-admin
+django-nested-inline
+djongo
+pymongo==3.12.3
+django-ninja
+django-ninja-jwt
+pandas
+tensorflow
+keras
