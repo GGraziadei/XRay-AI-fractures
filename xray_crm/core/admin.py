@@ -1,6 +1,8 @@
 from typing import Any
 from django.contrib import admin
 from django.http import HttpRequest, HttpResponse
+from django.urls import reverse
+from django.utils.safestring import mark_safe  
 
 # Register your models here.
 from .models import *
@@ -16,8 +18,16 @@ class ReportFileInline(admin.TabularInline):
 class PatientFileInline(admin.TabularInline):
     model = PatientFile
     # add external link
-    
     extra = 0
+
+    readonly_fields = ['report_link']
+
+    
+    def report_link(self, obj):
+        report = ReportFile.objects.filter(patient_file=obj).first()
+        return mark_safe('<a href="{}">{}</a>'.format(
+            reverse("admin:core_reportfile_change", args=(report.pk,)), report.id))
+    report_link.short_description = 'Report File'
 
 class RecordInline(admin.TabularInline):
     model = Record

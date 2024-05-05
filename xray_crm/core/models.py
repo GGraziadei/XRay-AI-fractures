@@ -89,7 +89,7 @@ class PatientFile(models.Model):
     record = models.ForeignKey(Record, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return self.patient.user.email
+        return self.file.name
     
 class ReportFile(models.Model):
     patient_file = models.ForeignKey(PatientFile, on_delete=models.CASCADE)
@@ -153,18 +153,26 @@ def post_save_patient_file(sender, instance, created, **kwargs):
     
     if created:
         filename = instance.file.path
-        from xray_crm.valid import predict_image
+        from xray_crm.valid import predict_image, number_fractures
         label = predict_image(filename)
+        
+        if label == ReportFile.BROKEN:
+            number = number_fractures(filename)
+        else:
+            number = 0
+
         ReportFile.objects.create(
             patient_file = instance,
             label = label,
-            member = "hart",
+            member = "unknown",
             hardware = False,
-            number = 2 
+            number = number
         )
 
 @receiver(post_save, sender=ReportFile)
 def post_save_report_file(sender, instance, created, **kwargs):
     if not created:
-       label = instance.label 
-       
+        label = instance.label
+        print(f"Image {instance.id} is {label}, added in the training set.")
+        # at the next training, this image will be added to the training set
+    

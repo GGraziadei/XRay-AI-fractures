@@ -2,6 +2,23 @@ import tensorflow as tf
 import numpy as np
 from core.models import ReportFile
 
+def number_fractures(image_path, model_path="xray_crm/mult_sing.h5"):
+    model = tf.keras.models.load_model(model_path)
+
+    img = tf.keras.utils.load_img(image_path, target_size=(150, 150), color_mode='grayscale')
+
+    # Convert the image to an array and normalize it
+    img_array = tf.keras.utils.img_to_array(img)
+    img_array = img_array / 255.0  # Scale the image
+    img_array = np.expand_dims(img_array, axis=0)  # Add a batch dimension
+
+    prediction = model.predict(img_array)
+
+    if prediction[0][0] > 0.52:
+        return 2
+    else:
+        return 1
+
 def predict_image(image_path, model_path="xray_crm/xray.h5"):
     # Load the model
     model = tf.keras.models.load_model(model_path)
